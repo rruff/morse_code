@@ -54,6 +54,8 @@ module MorseCode
     
     @seq_to_char = create_seq_map(@char_to_seq).freeze
     
+    # Accepts an alphanumeric character and returns the corresponding
+    # sequence of Morse Code signals.
     def self.sequence(char)
       key = char.to_s
       unless key.length == 1
@@ -63,11 +65,11 @@ module MorseCode
     end
     
     # Accepts a Morse Code sequence represented as a String, Array or Sequence instance and
-    # returns the corresponding alpha numeric character.
+    # returns the corresponding alphanumeric character.
     def self.character(seq)
-      if seq.respond_to? :to_sym
+      if seq.respond_to?(:to_sym)
         key = seq.to_sym
-      elsif seq.respond_to? :join
+      elsif seq.respond_to?(:join)
         key = seq.join.to_sym
       else
         key = seq.to_s_to_sym
@@ -131,9 +133,9 @@ module MorseCode
 
     def valid(signals)
       invalid = /[^-\.]/
-      if signals.is_a? String
-        !invalid.match(signals)
-      elsif signals.respond_to? "none?"
+      if signals.respond_to?(:match)
+        !signals.match(invalid)
+      elsif signals.respond_to?(:none?)
         signals.none? { |s| invalid.match(s) }
       else
         false
@@ -152,7 +154,7 @@ module MorseCode
       @sequences = sequences
     end
     
-    # Parses a single word of alpha numeric text and creates a new Word instance
+    # Parses a single word of alphanumeric text and creates a new Word instance
     def self.parse(text)
       sequences = text.split(//).map { |c| Sequence.from_char(c) }
       new(sequences)
@@ -163,7 +165,7 @@ module MorseCode
     end
     
     def to_alphanumeric
-      @sequences.map { |s| s.to_alphanumeric }
+      @sequences.map { |s| s.to_alphanumeric }.join
     end
   end
   
@@ -171,10 +173,6 @@ module MorseCode
   # Collects Word objects to form Morse Code representation of a message
   #
   class Message
-    class << self
-      alias_medthod :parse, :from_alphanumeric
-    end
-    
     DEFAULT_SEPARATOR = "//"
     
     attr_reader :words
@@ -192,22 +190,55 @@ module MorseCode
     def to_s
       @words.map { |w| w.to_s }.join(@separator)
     end
-  end
-
-  def self.to_alphanumeric(text)
     
-  end
-  
-  class String
-    def to_morse_code
-      MorseCode::Message.parse(self)
+    def to_alphanumeric
+      @words.map { |w| w.to_alphanumeric }.join(' ')
     end
   end
+
+  # Take a string of Morse Code text or an instance of Message, Word or Sequence
+  # and return the aplhanumeric text equivalent.
+  def self.to_alphanumeric(text, separator=Message::DEFAULT_SEPARATOR)
+    # If +text+ is already one of the MorseCode::* types...
+    if text.respond_to?(:to_alphanumeric)
+      text.to_alphanumeric
+    else
+      # .... . .-.. .-.. ---//.-- --- .-. .-.. -.. (Hello World)
+      words = text.split(separator).map do |w|
+        # 1: .... . .-.. .-.. --- (Hello)
+        # 2: .-- --- .-. .-.. -.. (World)
+        sequences = w.split(' ').map { |c| Sequence.new(c) }
+        Word.new(sequences)
+      end
+      Message.new(words).to_alphanumeric
+    end
+  end
+    
+  # Take a string of alphanumeric text and return the equivalent
+  # string of Morse Code text.
+  def self.from_alphanumeric(text, separator=Message::DEFAULT_SEPARATOR)
+    Message.parse(text, separator).to_s
+  end
+  
 end # MorseCode
+
+# Open the built in String class and add
+# a to_mc method
+class String
+  # Return a MorseCode::Message instance representing the current string
+  # mc = "Hello World".to_mc
+  # puts mc # => .... . .-.. .-.. ---//.-- --- .-. .-.. -..
+  def to_mc
+    MorseCode::Message.parse(self)
+  end
+end
 
 #
 # Run as a stand alone program
 #
 if __FILE__ == $0
-  puts MorseCode::Message.parse("Hello World")
+  hello_mc = MorseCode.from_alphanumeric("Hello World")
+  puts hello_mc
+  
+  puts MorseCode.to_alphanumeric(hello_mc)
 end
