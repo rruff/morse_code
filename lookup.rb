@@ -72,7 +72,7 @@ module MorseCode
       elsif seq.respond_to?(:join)
         key = seq.join.to_sym
       else
-        key = seq.to_s_to_sym
+        key = seq.to_s.to_sym
       end
 
       @seq_to_char[key]
