@@ -189,13 +189,3 @@ class String
     MorseCode::Message.parse(self)
   end
 end
-
-#
-# Run as a stand alone program
-#
-if __FILE__ == $0
-  hello_mc = MorseCode.from_alphanumeric("Hello World")
-  puts hello_mc
-  
-  puts MorseCode.to_alphanumeric(hello_mc)
-end
