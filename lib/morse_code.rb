@@ -1,8 +1,8 @@
-#! /usr/bin/env ruby
+require'morse_code/lookup'
 
 module MorseCode
-  require_relative 'lookup'
-  
+
+  # Indicates an invalid Morse Code signal (anything besides - or .)
   class InvalidSignalError < StandardError
     attr_reader :signal
     
