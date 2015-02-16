@@ -27,7 +27,7 @@ module MorseCode
   ##
   
   # A lookup table mapping Morse Code sequences to corresponding
-  # alphanueric characters and vice versa.
+  # alphanumeric characters and vice versa.
   class Lookup
     class << self
       attr_reader :char_to_seq, :seq_to_char
