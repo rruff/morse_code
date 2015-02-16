@@ -1,10 +1,10 @@
 require "./lib/morse_code.rb"
 require "minitest/autorun"
 
-class TestNAME < MiniTest::Test
+class TestMorseCode < MiniTest::Test
   
-  def test_sample
-    assert_equal(4, 2+2)
+  def test_to_alphanumeric
+    assert_equal("Hello World", MorseCode.to_alphanumeric(".... . .-.. .-.. ---//.-- --- .-. .-.. -.."))
   end
   
 end
