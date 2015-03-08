@@ -1,7 +1,7 @@
 require "minitest/autorun"
-require "./lib/morse_code/sequence.rb"
+require "./lib/morse_code/message.rb"
 
-class TestSequence < MiniTest::Test
+class TestMessage < MiniTest::Test
   def test_init_with_string
     b = MorseCode::Sequence.new("-...")
     assert_equal(%w(- . . .), b.signals)

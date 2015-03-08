@@ -1,3 +1,5 @@
+require 'morse_code/lookup'
+
 module MorseCode
   # Indicates an invalid Morse Code signal (anything besides - or .)
   class InvalidSignalError < StandardError
@@ -12,7 +14,7 @@ module MorseCode
   # A sequence of Morse Code signals representing a single character
   #
   class Sequence
-    attr_reader :signals
+    attr_reader :signals, :char
 
     def initialize(signals, char=nil)
       if valid(signals)
